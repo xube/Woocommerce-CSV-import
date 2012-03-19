@@ -127,6 +127,8 @@ if ( isset( $_REQUEST['wc_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 				'post_type'		=> $post_type,
 			);
 			if ( wp_exist_post_by_title($name) ) {
+				//Do nothing? NOPE! We have to add something to notification... COME ON!
+				$count--;
 			} else {
 				$post_id = wp_insert_post( $post );
 			}
@@ -299,10 +301,11 @@ for($i=0;$i<count($prod_cats);++$i)
 				update_post_meta( $post_id, '_thumbnail_id', $attach_id );
 			}
 			$count++;
+			$uploaded++;
 		}
 		?>
 		<div id="message" class="updated"><p>
-			<?php printf( __( '%s products have been uploaded', 'wc_csvl' ), $count );?>
+			<?php printf( __( '%s of %s products have been uploaded', 'wc_csvl' ), $count, $uploaded );?>			
 		</p></div><?php
 	} else { ?>
 		<div id="message" class="error"><p>
