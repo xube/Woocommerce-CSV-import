@@ -2,6 +2,12 @@
 
 /* Modified for Woocommerce */
 
+//Does this post exist? v. 0.2
+function wp_exist_post_by_title($title_str) {
+global $wpdb;
+return $wpdb->get_row("SELECT * FROM $wpdb->posts WHERE post_title = '" . $title_str . "'", 'ARRAY_A');
+}
+		
 if ( ! session_id() ) session_start();
 $post_type	= isset( $_REQUEST['post_type'] ) ? $_REQUEST['post_type'] : 'product';
 $separator	= isset( $_REQUEST['separator'] ) ? $_REQUEST['separator'] : ',';
@@ -39,12 +45,6 @@ if ( isset( $_REQUEST['wc_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 		$count = 0;
 		$i = 0;
 		
-		//Does this post exist? v. 0.2
-		function wp_exist_post_by_title($title_str) {
-		global $wpdb;
-		return $wpdb->get_row("SELECT * FROM $wpdb->posts WHERE post_title = '" . $title_str . "'", 'ARRAY_A');
-		}
-			
 		foreach( $data as $cols ) {
 			$i++;
 			$name = '';
@@ -66,58 +66,53 @@ if ( isset( $_REQUEST['wc_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 			//
 			foreach( $cols as $i => $col ) {
 				$col_name = isset( $_REQUEST['col_' . $i] ) ? $_REQUEST['col_' . $i] : '';
-				
-				if ( $col_name == 'wc_name' && wp_exist_post_by_title($name) ) {
-					return;
-				
-					if ( $col_name == 'wc_name' ) {
-						$name = $col;
-					} elseif ( $col_name == 'wc_content' ) {
-						$content = $col;
-					} elseif ( $col_name == 'wc_excerpt' ) {
-						$excerpt = $col;
-					} elseif ( $col_name == 'wc_price' ) {
-						$price = $col;
-					} elseif ( $col_name == 'wc_order' ) {
-						$order = $col;
-					} elseif ( $col_name == 'wc_weight' ) {
-						$weight = (float)$col;
-					} elseif ( $col_name == 'wc_sku' ) {
-						$sku = $col;
-					} elseif ( $col_name == 'wc_stock' ) {
-						$stock = (int)$col;
-					} elseif ( $col_name == 'wc_tax' ) {
-						$tax = (int)$col;
-						//
-						} elseif ( $col_name == 'multi_cat' ) {
-						$multi_cat = $col;
-						//
-					} elseif ( $col_name == 'wc_attachment' ) {
-						$attachments[] = $col;
-					} elseif ( $col_name == 'wc_thumbnail' ) {
-						$thumbnail = $col;
-						//
-						} elseif ( $col_name == 'attribs' ) {
-						$taxo_attribs = $col;
-						//
-					} else {
-						$break = false;
-						if ( is_array( $custom_field_defs ) && count( $custom_field_defs ) > 0 ) {
-							foreach( $custom_field_defs as $custom_field_def ) {
-								if ( $col_name == $custom_field_def['id'] ) {
-									$custom_values[$col_name] = $col;
-									$break = true;
-									break;
-								}
+				if ( $col_name == 'wc_name' ) {
+					$name = $col;
+				} elseif ( $col_name == 'wc_content' ) {
+					$content = $col;
+				} elseif ( $col_name == 'wc_excerpt' ) {
+					$excerpt = $col;
+				} elseif ( $col_name == 'wc_price' ) {
+					$price = $col;
+				} elseif ( $col_name == 'wc_order' ) {
+					$order = $col;
+				} elseif ( $col_name == 'wc_weight' ) {
+					$weight = (float)$col;
+				} elseif ( $col_name == 'wc_sku' ) {
+					$sku = $col;
+				} elseif ( $col_name == 'wc_stock' ) {
+					$stock = (int)$col;
+				} elseif ( $col_name == 'wc_tax' ) {
+					$tax = (int)$col;
+					//
+					} elseif ( $col_name == 'multi_cat' ) {
+					$multi_cat = $col;
+					//
+				} elseif ( $col_name == 'wc_attachment' ) {
+					$attachments[] = $col;
+				} elseif ( $col_name == 'wc_thumbnail' ) {
+					$thumbnail = $col;
+					//
+					} elseif ( $col_name == 'attribs' ) {
+					$taxo_attribs = $col;
+					//
+				} else {
+					$break = false;
+					if ( is_array( $custom_field_defs ) && count( $custom_field_defs ) > 0 ) {
+						foreach( $custom_field_defs as $custom_field_def ) {
+							if ( $col_name == $custom_field_def['id'] ) {
+								$custom_values[$col_name] = $col;
+								$break = true;
+								break;
 							}
 						}
-						if ( ! $break && is_array( $taxonomies ) && count( $taxonomies ) > 0 ) {
-							foreach( $taxonomies as $taxmy ) {
-								if ( $col_name == 'wc_tax_' . $taxmy ) {
-									$taxo_values[$taxmy] = $col;
-									$break = true;
-									break;
-								}
+					}
+					if ( ! $break && is_array( $taxonomies ) && count( $taxonomies ) > 0 ) {
+						foreach( $taxonomies as $taxmy ) {
+							if ( $col_name == 'wc_tax_' . $taxmy ) {
+								$taxo_values[$taxmy] = $col;
+								$break = true;
+								break;
 							}
 						}
 					}
@@ -131,7 +126,10 @@ if ( isset( $_REQUEST['wc_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 				'post_title'	=> $name,
 				'post_type'		=> $post_type,
 			);
-			$post_id = wp_insert_post( $post );
+			if ( wp_exist_post_by_title($name) ) {
+			} else {
+				$post_id = wp_insert_post( $post );
+			}
 			if ( $cat > 0 ) {
 				wp_set_object_terms( $post_id, (int)$cat, $taxonomy, false );
 			}
@@ -316,15 +314,6 @@ for($i=0;$i<count($prod_cats);++$i)
 <div class="wrap">
 
 <h2><?php echo __( 'CSV Loader for Woocommerce', 'wc_csvl' );?></h2>
-	<p><?php
-	//TEST------- 
-	/*global $wpdb;
-	$title_str = 'Astrotek Audio RCA Socket to Mini 1/8", 25cm';
-	$seldbpost = $wpdb->get_row("SELECT * FROM $wpdb->posts WHERE post_title = '" . $title_str . "'", 'ARRAY_A');
-	var_dump($seldbpost);*/
-	//-----------	
-	?>
-	</p>
 <p>Wait! Wait! Wait! It's a very alpha version, just to test NOT USE IN YOUR SITE, JUST TEST!</p>
 <p>To use a hierarchical categorie (parent/children) make a column multi_cat and writing in the fields the hierarchical category, ie: hardware,memory,sodimm,ddr3</p>
 <p>I don't know why but if you use hierarchicals categories you need to edit and save a categorie one time to see the childrens (???)</p>
