@@ -2,8 +2,8 @@
 /*
 Plugin Name: Woocommerce CSV Loader
 Description: CSV loader for Woocommerce
-Version: 0.11
-Author: Colin & XU3E
+Version: 0.1
+Author: Colin
 License: GPL
 parent: woocommerce
 */
