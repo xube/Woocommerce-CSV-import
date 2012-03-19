@@ -1,0 +1,143 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: tcp_csvl\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2011-04-20 11:49+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: sensei <sensei@thecartpress.com>\n"
+"Language-Team: \n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-KeywordsList: __;_e\n"
+"X-Poedit-Basepath: ../\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: CSVLoaderForTheCartPress.class.php:45
+#: admin/CSVLoader.php:158
+msgid "CSV Loader"
+msgstr ""
+
+#: admin/CSVLoader.php:144
+#, php-format
+msgid "%s products have been uploaded"
+msgstr ""
+
+#: admin/CSVLoader.php:148
+msgid "No product has been uploaded"
+msgstr ""
+
+#: admin/CSVLoader.php:169
+msgid "Separator"
+msgstr ""
+
+#: admin/CSVLoader.php:173
+msgid "Columns title in first line"
+msgstr ""
+
+#: admin/CSVLoader.php:179
+msgid "file"
+msgstr ""
+
+#: admin/CSVLoader.php:187
+msgid "Load"
+msgstr ""
+
+#: admin/CSVLoader.php:188
+msgid "This action helps you to test if the file is correct."
+msgstr ""
+
+#: admin/CSVLoader.php:191
+msgid "These lines are the four first products loaded from the CSV file. If you think they are correct continue with the process."
+msgstr ""
+
+#: admin/CSVLoader.php:224
+msgid "Assign the columns of the CSV file (left column) to the fields of the products (right column)."
+msgstr ""
+
+#: admin/CSVLoader.php:233
+msgid "Imported columns"
+msgstr ""
+
+#: admin/CSVLoader.php:234
+#: admin/CSVLoader.php:240
+msgid "Woocommerce columns"
+msgstr ""
+
+#: admin/CSVLoader.php:239
+msgid "CSV columns"
+msgstr ""
+
+#: admin/CSVLoader.php:250
+msgid "None"
+msgstr ""
+
+#: admin/CSVLoader.php:251
+msgid "Title"
+msgstr ""
+
+#: admin/CSVLoader.php:252
+msgid "Content"
+msgstr ""
+
+#: admin/CSVLoader.php:253
+msgid "Excerpt"
+msgstr ""
+
+#: admin/CSVLoader.php:254
+msgid "Price"
+msgstr ""
+
+#: admin/CSVLoader.php:255
+msgid "Stock"
+msgstr ""
+
+#: admin/CSVLoader.php:256
+msgid "Weight"
+msgstr ""
+
+#: admin/CSVLoader.php:257
+msgid "SKU"
+msgstr ""
+
+#: admin/CSVLoader.php:258
+msgid "Order"
+msgstr ""
+
+#: admin/CSVLoader.php:259
+msgid "Tax"
+msgstr ""
+
+#: admin/CSVLoader.php:260
+msgid "Attachment"
+msgstr ""
+
+#: admin/CSVLoader.php:261
+msgid "Thumbnail"
+msgstr ""
+
+#: admin/CSVLoader.php:270
+msgid "Attach this products to the Category"
+msgstr ""
+
+#: admin/CSVLoader.php:279
+msgid "Set products status to"
+msgstr ""
+
+#: admin/CSVLoader.php:281
+msgid "publish"
+msgstr ""
+
+#: admin/CSVLoader.php:282
+msgid "dratf"
+msgstr ""
+
+#: admin/CSVLoader.php:286
+msgid "Upload"
+msgstr ""
+
+#: admin/CSVLoader.php:287
+msgid "This action will load the products in the eCommerce. Be patient."
+msgstr ""
+

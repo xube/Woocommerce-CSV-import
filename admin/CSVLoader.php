@@ -10,11 +10,11 @@ $taxonomy	= isset( $_REQUEST['taxonomy'] ) ? $_REQUEST['taxonomy'] : 'taxonomy';
 $multi_cat	= isset( $_REQUEST['multi_cat'] ) ? $_REQUEST['multicat'] : 'multi_cat';
 
 
-$cat		= isset( $_REQUEST['jigo_cat'] ) ? $_REQUEST['jigo_cat'] : '';
-$jigo_status	= isset( $_REQUEST['jigo_status'] ) ? $_REQUEST['jigo_status'] : '';
+$cat		= isset( $_REQUEST['wc_cat'] ) ? $_REQUEST['wc_cat'] : '';
+$wc_status	= isset( $_REQUEST['wc_status'] ) ? $_REQUEST['wc_status'] : '';
 $data	= array();
 $titles	= array();
-if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
+if ( isset( $_REQUEST['wc_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 	if ( ( $handle = fopen( $_FILES['upload_file']['tmp_name'], 'r' ) ) !== FALSE ) {
 		while ( ( $line = fgetcsv($handle, 1024, $separator ) ) !== FALSE )
 			$data[] = $line;
@@ -22,22 +22,29 @@ if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 		if ( $titeled ) {
 			$titles = $data[0];
 			unset( $data[0] );
-		} else {
+		} else { 
 			for( $i = 0; $i < count( $data[0] ); $i++ )
 				$titles[] = 'col_' . $i;
 		}
 	}
-	$_SESSION['jigo_csv_titles'] = $titles;
-	$_SESSION['jigo_csv_data'] = $data;
-} elseif ( isset( $_REQUEST['jigo_load_products_from_csv'] ) && isset( $_SESSION['jigo_csv_titles'] ) ) {
-	$titles = $_SESSION['jigo_csv_titles'];
-	$data = $_SESSION['jigo_csv_data'];
-	unset( $_SESSION['jigo_csv_titles'] );
-	unset( $_SESSION['jigo_csv_data'] );
+	$_SESSION['wc_csv_titles'] = $titles;
+	$_SESSION['wc_csv_data'] = $data;
+} elseif ( isset( $_REQUEST['wc_load_products_from_csv'] ) && isset( $_SESSION['wc_csv_titles'] ) ) {
+	$titles = $_SESSION['wc_csv_titles'];
+	$data = $_SESSION['wc_csv_data'];
+	unset( $_SESSION['wc_csv_titles'] );
+	unset( $_SESSION['wc_csv_data'] );
 	if ( is_array( $data ) ) {
 		$taxonomies = get_object_taxonomies( $post_type );
 		$count = 0;
 		$i = 0;
+		
+		//Does this post exist? v. 0.2
+		function wp_exist_post_by_title($title_str) {
+		global $wpdb;
+		return $wpdb->get_row("SELECT * FROM $wpdb->posts WHERE post_title = '" . $title_str . "'", 'ARRAY_A');
+		}
+			
 		foreach( $data as $cols ) {
 			$i++;
 			$name = '';
@@ -59,53 +66,58 @@ if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 			//
 			foreach( $cols as $i => $col ) {
 				$col_name = isset( $_REQUEST['col_' . $i] ) ? $_REQUEST['col_' . $i] : '';
-				if ( $col_name == 'jigo_name' ) {
-					$name = $col;
-				} elseif ( $col_name == 'jigo_content' ) {
-					$content = $col;
-				} elseif ( $col_name == 'jigo_excerpt' ) {
-					$excerpt = $col;
-				} elseif ( $col_name == 'jigo_price' ) {
-					$price = $col;
-				} elseif ( $col_name == 'jigo_order' ) {
-					$order = $col;
-				} elseif ( $col_name == 'jigo_weight' ) {
-					$weight = (float)$col;
-				} elseif ( $col_name == 'jigo_sku' ) {
-					$sku = $col;
-				} elseif ( $col_name == 'jigo_stock' ) {
-					$stock = (int)$col;
-				} elseif ( $col_name == 'jigo_tax' ) {
-					$tax = (int)$col;
-					//
-					} elseif ( $col_name == 'multi_cat' ) {
-					$multi_cat = $col;
-					//
-				} elseif ( $col_name == 'jigo_attachment' ) {
-					$attachments[] = $col;
-				} elseif ( $col_name == 'jigo_thumbnail' ) {
-					$thumbnail = $col;
-					//
-					} elseif ( $col_name == 'attribs' ) {
-					$taxo_attribs = $col;
-					//
-				} else {
-					$break = false;
-					if ( is_array( $custom_field_defs ) && count( $custom_field_defs ) > 0 ) {
-						foreach( $custom_field_defs as $custom_field_def ) {
-							if ( $col_name == $custom_field_def['id'] ) {
-								$custom_values[$col_name] = $col;
-								$break = true;
-								break;
+				
+				if ( $col_name == 'wc_name' && wp_exist_post_by_title($name) ) {
+					return;
+				
+					if ( $col_name == 'wc_name' ) {
+						$name = $col;
+					} elseif ( $col_name == 'wc_content' ) {
+						$content = $col;
+					} elseif ( $col_name == 'wc_excerpt' ) {
+						$excerpt = $col;
+					} elseif ( $col_name == 'wc_price' ) {
+						$price = $col;
+					} elseif ( $col_name == 'wc_order' ) {
+						$order = $col;
+					} elseif ( $col_name == 'wc_weight' ) {
+						$weight = (float)$col;
+					} elseif ( $col_name == 'wc_sku' ) {
+						$sku = $col;
+					} elseif ( $col_name == 'wc_stock' ) {
+						$stock = (int)$col;
+					} elseif ( $col_name == 'wc_tax' ) {
+						$tax = (int)$col;
+						//
+						} elseif ( $col_name == 'multi_cat' ) {
+						$multi_cat = $col;
+						//
+					} elseif ( $col_name == 'wc_attachment' ) {
+						$attachments[] = $col;
+					} elseif ( $col_name == 'wc_thumbnail' ) {
+						$thumbnail = $col;
+						//
+						} elseif ( $col_name == 'attribs' ) {
+						$taxo_attribs = $col;
+						//
+					} else {
+						$break = false;
+						if ( is_array( $custom_field_defs ) && count( $custom_field_defs ) > 0 ) {
+							foreach( $custom_field_defs as $custom_field_def ) {
+								if ( $col_name == $custom_field_def['id'] ) {
+									$custom_values[$col_name] = $col;
+									$break = true;
+									break;
+								}
 							}
 						}
-					}
-					if ( ! $break && is_array( $taxonomies ) && count( $taxonomies ) > 0 ) {
-						foreach( $taxonomies as $taxmy ) {
-							if ( $col_name == 'jigo_tax_' . $taxmy ) {
-								$taxo_values[$taxmy] = $col;
-								$break = true;
-								break;
+						if ( ! $break && is_array( $taxonomies ) && count( $taxonomies ) > 0 ) {
+							foreach( $taxonomies as $taxmy ) {
+								if ( $col_name == 'wc_tax_' . $taxmy ) {
+									$taxo_values[$taxmy] = $col;
+									$break = true;
+									break;
+								}
 							}
 						}
 					}
@@ -115,7 +127,7 @@ if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 				'comment_status'=> 'open',
 				'post_content'	=> $content,
 				'post_excerpt'	=> $excerpt,
-				'post_status'	=> $jigo_status,
+				'post_status'	=> $wc_status,
 				'post_title'	=> $name,
 				'post_type'		=> $post_type,
 			);
@@ -136,13 +148,13 @@ if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 			update_post_meta( $post_id, '_sale_price_dates_to', '' );
 
 			//****** need to make a product_data and variation post insert ******//
-			//update_post_meta( $post_id, 'jigo_tax_id', $tax );
-			//update_post_meta( $post_id, 'jigo_is_downloadable', false );
-			//update_post_meta( $post_id, 'jigo_max_downloads', 0 );
-			//update_post_meta( $post_id, 'jigo_days_to_expire', 0 );
-			//update_post_meta( $post_id, 'jigo_type', 'SIMPLE' );
-			//update_post_meta( $post_id, 'jigo_weight', $weight );
-			//update_post_meta( $post_id, 'jigo_order', $order );
+			//update_post_meta( $post_id, 'wc_tax_id', $tax );
+			//update_post_meta( $post_id, 'wc_is_downloadable', false );
+			//update_post_meta( $post_id, 'wc_max_downloads', 0 );
+			//update_post_meta( $post_id, 'wc_days_to_expire', 0 );
+			//update_post_meta( $post_id, 'wc_type', 'SIMPLE' );
+			//update_post_meta( $post_id, 'wc_weight', $weight );
+			//update_post_meta( $post_id, 'wc_order', $order );
 
 			////
 
@@ -292,19 +304,27 @@ for($i=0;$i<count($prod_cats);++$i)
 		}
 		?>
 		<div id="message" class="updated"><p>
-			<?php printf( __( '%s products have been uploaded', 'jigo_csvl' ), $count );?>
+			<?php printf( __( '%s products have been uploaded', 'wc_csvl' ), $count );?>
 		</p></div><?php
 	} else { ?>
 		<div id="message" class="error"><p>
-			<?php _e( 'No product has been uploaded', 'jigo_csvl' );?>
+			<?php _e( 'No product has been uploaded', 'wc_csvl' );?>
 		</p></div><?php
 	}
 }
 ?>
 <div class="wrap">
 
-<h2><?php echo __( 'CSV Loader for Woocommerce', 'jigo_csvl' );?></h2>
-
+<h2><?php echo __( 'CSV Loader for Woocommerce', 'wc_csvl' );?></h2>
+	<p><?php
+	//TEST------- 
+	/*global $wpdb;
+	$title_str = 'Astrotek Audio RCA Socket to Mini 1/8", 25cm';
+	$seldbpost = $wpdb->get_row("SELECT * FROM $wpdb->posts WHERE post_title = '" . $title_str . "'", 'ARRAY_A');
+	var_dump($seldbpost);*/
+	//-----------	
+	?>
+	</p>
 <p>Wait! Wait! Wait! It's a very alpha version, just to test NOT USE IN YOUR SITE, JUST TEST!</p>
 <p>To use a hierarchical categorie (parent/children) make a column multi_cat and writing in the fields the hierarchical category, ie: hardware,memory,sodimm,ddr3</p>
 <p>I don't know why but if you use hierarchicals categories you need to edit and save a categorie one time to see the childrens (???)</p>
@@ -334,7 +354,7 @@ for($i=0;$i<count($prod_cats);++$i)
 			<option value="product">Product</option>
 
 		</select>
-		<input type="submit" name="jigo_load_taxonomies" value="<?php _e( 'Load taxonomies', 'tcp' );?>" class="button-secondary"/>
+		<input type="submit" name="wc_load_taxonomies" value="<?php _e( 'Load taxonomies', 'tcp' );?>" class="button-secondary"/>
 	</td>
 	</tr>
 	<tr valign="top">
@@ -353,28 +373,28 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 	</tr>
 	<tr valign="top">
 	<th scope="row">
-		<label for="separator"><?php _e( 'Separator', 'jigo_csvl' );?>:</label>
+		<label for="separator"><?php _e( 'Separator', 'wc_csvl' );?>:</label>
 	</th>
 	<td>
 		<input type="text" name="separator" id="separator" value="<?php echo $separator;?>" size="2" maxlenght="4"/>
-		<label for="titeled"><?php _e( 'Columns title in first line', 'jigo_csvl' );?>:</label>
+		<label for="titeled"><?php _e( 'Columns title in first line', 'wc_csvl' );?>:</label>
 		<input type="checkbox" name="titeled" id="titeled" <?php checked($titeled);?> size="2" maxlenght="4" checked />
 	</td>
 	</tr>
 
 	<tr valign="top">
 	<th scope="row">
-		<label for="hierarchical_multicat"><?php _e( 'Hierarchical categories', 'jigo_csvl' );?>:</label>
+		<label for="hierarchical_multicat"><?php _e( 'Hierarchical categories', 'wc_csvl' );?>:</label>
 	</th>
 	<td>
-		<label for="titeled"><?php _e( 'Hierarchical Categories', 'jigo_csvl' );?>:</label>
+		<label for="titeled"><?php _e( 'Hierarchical Categories', 'wc_csvl' );?>:</label>
 		<input type="checkbox" name="hierarchical_multicat" id="hierarchical_multicat" <?php checked($hierarchical_multicat);?> size="2" maxlenght="4" checked />
 	</td>
 	</tr>
 
 	<tr valign="top">
 	<th scope="row">
-		<label for="upload_file" value=""><?php _e( 'file', 'jigo_csvl' );?>:</label>
+		<label for="upload_file" value=""><?php _e( 'file', 'wc_csvl' );?>:</label>
 	</th>
 	<td>
 		<input type="file" name="upload_file" id="upload_file" />
@@ -382,11 +402,11 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 	</tr>
 	</tbody>
 	</table>
-	<span class="submit"><input type="submit" name="jigo_load_csv" id="jigo_load_csv" value="<?php _e( 'Load', 'jigo_csvl' );?>" style="button-secondary" /></span>
-	<span><?php _e( 'This action helps you to test if the file is correct. Only 4 rows will be displayed.', 'jigo_csvl' );?></span>
+	<span class="submit"><input type="submit" name="wc_load_csv" id="wc_load_csv" value="<?php _e( 'Load', 'wc_csvl' );?>" style="button-secondary" /></span>
+	<span><?php _e( 'This action helps you to test if the file is correct. Only 4 rows will be displayed.', 'wc_csvl' );?></span>
 </form>
 <?php if ( is_array( $data ) && count( $data ) > 0 ) : ?>
-<p><?php _e( 'These lines are the four first products loaded from the CSV file. If you think they are correct continue with the process.', 'jigo_csvl' );?></p>
+<p><?php _e( 'These lines are the four first products loaded from the CSV file. If you think they are correct continue with the process.', 'wc_csvl' );?></p>
 <table class="widefat fixed" cellspacing="0">
 	<?php if ( is_array( $titles ) && count( $titles ) > 0 ) :?>
 		<thead>
@@ -419,7 +439,7 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 		<?php endforeach;?>
 	</tbody>
 </table>
-<p><?php _e( 'Assign the columns of the CSV file (left column) to the fields of the products (right column).', 'jigo_csvl' );?></p>
+<p><?php _e( 'Assign the columns of the CSV file (left column) to the fields of the products (right column).', 'wc_csvl' );?></p>
 <form method="post">
 <input type="hidden" name="post_type" value="<?php echo $post_type;?>" />
 <input type="hidden" name="taxonomy" value="<?php echo $taxonomy;?>" />
@@ -430,14 +450,14 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 <table class="widefat fixed" cellspacing="0">
 <thead>
 	<tr scope="col" class="manage-column">
-		<th><?php _e( 'Imported columns', 'jigo_csvl' );?></th>
-		<th><?php _e( 'Woocommerce columns', 'jigo_csvl' );?></th>
+		<th><?php _e( 'Imported columns', 'wc_csvl' );?></th>
+		<th><?php _e( 'Woocommerce columns', 'wc_csvl' );?></th>
 	</tr>
 </thead>
 <tfoot>
 	<tr scope="col" class="manage-column">
-		<th><?php _e( 'CSV columns', 'jigo_csvl' );?></th>
-		<th><?php _e( 'Woocommerce columns', 'jigo_csvl' );?></th>
+		<th><?php _e( 'CSV columns', 'wc_csvl' );?></th>
+		<th><?php _e( 'Woocommerce columns', 'wc_csvl' );?></th>
 	</tr>
 </tfoot>
 <tbody>
@@ -447,25 +467,25 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 			<td><?php echo $col;?></td>
 			<td>
 			<select name="col_<?php echo $i;?>">
-				<option value=""><?php _e( 'None', 'jigo_csvl' );?></option>
-				<option value="jigo_name" <?php selected( strtoupper( $col ), 'NAME');?>>Title (<?php _e( 'Title', 'jigo_csvl' );?>)</option>
-				<option value="jigo_content" <?php selected( strtoupper( $col ), 'CONTENT');?>>Content (<?php _e( 'Content', 'jigo_csvl' );?>)</option>
-				<option value="jigo_excerpt" <?php selected( strtoupper( $col ), 'EXCERPT');?>>Excerpt (<?php _e( 'Excerpt', 'jigo_csvl' );?>)</option>
-				<option value="jigo_price" <?php selected( strtoupper( $col ), 'PRICE');?>>Price (<?php _e( 'Price', 'jigo_csvl' );?>)</option>
-				<option value="jigo_stock" <?php selected( strtoupper( $col ), 'STOCK');?>>Stock (<?php _e( 'Stock', 'jigo_csvl' );?>)</option>
-				<option value="jigo_weight" <?php selected( strtoupper( $col ), 'WEIGHT');?>>Weight (<?php _e( 'Weight', 'jigo_csvl' );?>)</option>
-				<option value="jigo_sku" <?php selected( strtoupper( $col ), 'SKU');?>>SKU (<?php _e( 'SKU', 'jigo_csvl' );?>)</option>
-				<option value="jigo_order" <?php selected( strtoupper( $col ), 'ORDER');?>>Order (<?php _e( 'Order', 'jigo_csvl' );?>)</option>
-				<option value="jigo_tax" <?php selected( strtoupper( $col ), 'TAX');?>>Tax (<?php _e( 'Tax', 'jigo_csvl' );?>)</option>
-				<option value="jigo_attachment" <?php selected( strtoupper( $col ), 'ATTACHMENT');?>>Attachment (<?php _e( 'Attachment', 'jigo_csvl' );?>)</option>
-				<option value="jigo_thumbnail" <?php selected( strtoupper( $col ), 'THUMBNAIL');?>>Thumbnail (<?php _e( 'Thumbnail', 'jigo_csvl' );?>)</option>
+				<option value=""><?php _e( 'None', 'wc_csvl' );?></option>
+				<option value="wc_name" <?php selected( strtoupper( $col ), 'NAME');?>>Title (<?php _e( 'Title', 'wc_csvl' );?>)</option>
+				<option value="wc_content" <?php selected( strtoupper( $col ), 'CONTENT');?>>Content (<?php _e( 'Content', 'wc_csvl' );?>)</option>
+				<option value="wc_excerpt" <?php selected( strtoupper( $col ), 'EXCERPT');?>>Excerpt (<?php _e( 'Excerpt', 'wc_csvl' );?>)</option>
+				<option value="wc_price" <?php selected( strtoupper( $col ), 'PRICE');?>>Price (<?php _e( 'Price', 'wc_csvl' );?>)</option>
+				<option value="wc_stock" <?php selected( strtoupper( $col ), 'STOCK');?>>Stock (<?php _e( 'Stock', 'wc_csvl' );?>)</option>
+				<option value="wc_weight" <?php selected( strtoupper( $col ), 'WEIGHT');?>>Weight (<?php _e( 'Weight', 'wc_csvl' );?>)</option>
+				<option value="wc_sku" <?php selected( strtoupper( $col ), 'SKU');?>>SKU (<?php _e( 'SKU', 'wc_csvl' );?>)</option>
+				<option value="wc_order" <?php selected( strtoupper( $col ), 'ORDER');?>>Order (<?php _e( 'Order', 'wc_csvl' );?>)</option>
+				<option value="wc_tax" <?php selected( strtoupper( $col ), 'TAX');?>>Tax (<?php _e( 'Tax', 'wc_csvl' );?>)</option>
+				<option value="wc_attachment" <?php selected( strtoupper( $col ), 'ATTACHMENT');?>>Attachment (<?php _e( 'Attachment', 'wc_csvl' );?>)</option>
+				<option value="wc_thumbnail" <?php selected( strtoupper( $col ), 'THUMBNAIL');?>>Thumbnail (<?php _e( 'Thumbnail', 'wc_csvl' );?>)</option>
 
 				<option value="multi_cat" <?php selected( strtoupper( $col ), 'MULTI_CAT');?>>MultiCat (<?php _e( 'multi_cat', 'multi_cat' );?>)</option>
 
 				<option value="attribs" <?php selected( strtoupper( $col ), 'attribs');?>>Attrib (<?php _e( 'Attribs', 'attribs' );?>)</option>
 
 				<?php foreach( get_object_taxonomies( $post_type ) as $taxmy ) : $tax = get_taxonomy( $taxmy ); ?>
-				<option value="jigo_tax_<?php echo $taxmy;?>">T <?php echo $tax->labels->name;?></option>
+				<option value="wc_tax_<?php echo $taxmy;?>">T <?php echo $tax->labels->name;?></option>
 				<?php endforeach;?>
 
 
@@ -478,15 +498,15 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 </table>
 
 <p>
-	<label for="jigo_status"><?php _e( 'Set products status to', 'jigo_csvl' )?>:</label>
-	<select id="jigo_status" name="jigo_status">
-		<option value="publish"><?php _e( 'publish', 'jigo_cvsl' );?></option>
-		<option value="draft"><?php _e( 'draft', 'jigo_cvsl' );?></option>
+	<label for="wc_status"><?php _e( 'Set products status to', 'wc_csvl' )?>:</label>
+	<select id="wc_status" name="wc_status">
+		<option value="publish"><?php _e( 'publish', 'wc_cvsl' );?></option>
+		<option value="draft"><?php _e( 'draft', 'wc_cvsl' );?></option>
 	</select>
 </p>
 <span class="submit">
-	<input type="submit" name="jigo_load_products_from_csv" id="jigo_load_products_from_csv" value="<?php _e( 'Upload', 'jigo_csvl' );?>" class="button-primary" />
-	<span><?php _e( 'This action will load the products in the eCommerce. Be patient.', 'jigo_csvl' );?></span>
+	<input type="submit" name="wc_load_products_from_csv" id="wc_load_products_from_csv" value="<?php _e( 'Upload', 'wc_csvl' );?>" class="button-primary" />
+	<span><?php _e( 'This action will load the products in the eCommerce. Be patient.', 'wc_csvl' );?></span>
 </span>
 </form>
 <?php endif;?>
