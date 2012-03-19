@@ -130,7 +130,7 @@ if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 			update_post_meta( $post_id, '_weight', $weight );
 			update_post_meta( $post_id, '_stock', $stock );
 			update_post_meta( $post_id, '_featured', '' );
-			update_post_meta( $post_id, '_regular_price', '' );
+			update_post_meta( $post_id, '_regular_price', $price );
 			update_post_meta( $post_id, '_sale_price', '' );
 			update_post_meta( $post_id, '_sale_price_dates_from', '' );
 			update_post_meta( $post_id, '_sale_price_dates_to', '' );
