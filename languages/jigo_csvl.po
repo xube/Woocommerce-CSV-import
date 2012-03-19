@@ -62,7 +62,7 @@ msgstr ""
 
 #: admin/CSVLoader.php:234
 #: admin/CSVLoader.php:240
-msgid "JigoShop columns"
+msgid "Woocommerce columns"
 msgstr ""
 
 #: admin/CSVLoader.php:239

@@ -1,5 +1,7 @@
 <?php
 
+/* Modified for Woocommerce */
+
 if ( ! session_id() ) session_start();
 $post_type	= isset( $_REQUEST['post_type'] ) ? $_REQUEST['post_type'] : 'product';
 $separator	= isset( $_REQUEST['separator'] ) ? $_REQUEST['separator'] : '|';
@@ -122,14 +124,14 @@ if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 				wp_set_object_terms( $post_id, (int)$cat, $taxonomy, false );
 			}
 
-			update_post_meta( $post_id, 'visibility', 'visible' );
-			update_post_meta( $post_id, 'sku', $sku );
-			update_post_meta( $post_id, 'regular_price', $price );
-			update_post_meta( $post_id, 'weight', $weight );
-			update_post_meta( $post_id, 'stock', $stock );
-			update_post_meta( $post_id, 'featured', 'no' );
-			update_post_meta( $post_id, 'sale_price_dates_from', '' );
-			update_post_meta( $post_id, 'sale_price_dates_to', '' );
+			update_post_meta( $post_id, '_visibility', 'visible' );
+			update_post_meta( $post_id, '_sku', $sku );
+			update_post_meta( $post_id, '_regular_price', $price );
+			update_post_meta( $post_id, '_weight', $weight );
+			update_post_meta( $post_id, '_stock', $stock );
+			update_post_meta( $post_id, '_featured', '' );
+			//update_post_meta( $post_id, 'sale_price_dates_from', '' );
+			//update_post_meta( $post_id, 'sale_price_dates_to', '' );
 
 			//****** need to make a product_data and variation post insert ******//
 			//update_post_meta( $post_id, 'jigo_tax_id', $tax );
@@ -146,7 +148,7 @@ if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 $pdata['sku'] = $sku;
 $pdata['regular_price'] = $price;
 $pdata['sale_price'] = '';
-$pdata['featured'] = 'no';
+$pdata['featured'] = '';
 $pdata['weight'] = $weight;
 $pdata['tax_status'] = $taxable;
 $pdata['tax_class'] = '';
@@ -175,7 +177,7 @@ if (!empty($value[0]))
 				{
 register_taxonomy( 'pa_'.sanitize_title($value[0]), 'post', array( 'hierarchical' => false, 'label' => 'pa_'.sanitize_title($value[0]) ) );
 
- $wpdb->insert( $wpdb->prefix . "jigoshop_attribute_taxonomies", array( 'attribute_name' => $value[0], 'attribute_type' => 'text' ), array( '%s', '%s' ) );
+ $wpdb->insert( $wpdb->prefix . "woocommerce_attribute_taxonomies", array( 'attribute_name' => $value[0], 'attribute_type' => 'text' ), array( '%s', '%s' ) );
 }
 
 
@@ -299,7 +301,7 @@ for($i=0;$i<count($prod_cats);++$i)
 ?>
 <div class="wrap">
 
-<h2><?php echo __( 'CSV Loader for JigoShop', 'jigo_csvl' );?></h2>
+<h2><?php echo __( 'CSV Loader for Woocommerce', 'jigo_csvl' );?></h2>
 
 <p>Wait! Wait! Wait! It's a very alpha version, just to test NOT USE IN YOUR SITE, JUST TEST!</p>
 <p>To use a hierarchical categorie (parent/children) make a column multi_cat and writing in the fields the hierarchical category, ie: hardware,memory,sodimm,ddr3</p>
@@ -427,13 +429,13 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 <thead>
 	<tr scope="col" class="manage-column">
 		<th><?php _e( 'Imported columns', 'jigo_csvl' );?></th>
-		<th><?php _e( 'JigoShop columns', 'jigo_csvl' );?></th>
+		<th><?php _e( 'Woocommerce columns', 'jigo_csvl' );?></th>
 	</tr>
 </thead>
 <tfoot>
 	<tr scope="col" class="manage-column">
 		<th><?php _e( 'CSV columns', 'jigo_csvl' );?></th>
-		<th><?php _e( 'JigoShop columns', 'jigo_csvl' );?></th>
+		<th><?php _e( 'Woocommerce columns', 'jigo_csvl' );?></th>
 	</tr>
 </tfoot>
 <tbody>
