@@ -126,12 +126,14 @@ if ( isset( $_REQUEST['jigo_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 
 			update_post_meta( $post_id, '_visibility', 'visible' );
 			update_post_meta( $post_id, '_sku', $sku );
-			update_post_meta( $post_id, '_regular_price', $price );
+			update_post_meta( $post_id, '_price', $price );
 			update_post_meta( $post_id, '_weight', $weight );
 			update_post_meta( $post_id, '_stock', $stock );
 			update_post_meta( $post_id, '_featured', '' );
-			//update_post_meta( $post_id, 'sale_price_dates_from', '' );
-			//update_post_meta( $post_id, 'sale_price_dates_to', '' );
+			update_post_meta( $post_id, '_regular_price', '' );
+			update_post_meta( $post_id, '_sale_price', '' );
+			update_post_meta( $post_id, '_sale_price_dates_from', '' );
+			update_post_meta( $post_id, '_sale_price_dates_to', '' );
 
 			//****** need to make a product_data and variation post insert ******//
 			//update_post_meta( $post_id, 'jigo_tax_id', $tax );
@@ -452,7 +454,7 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 				<option value="jigo_price" <?php selected( strtoupper( $col ), 'PRICE');?>>Price (<?php _e( 'Price', 'jigo_csvl' );?>)</option>
 				<option value="jigo_stock" <?php selected( strtoupper( $col ), 'STOCK');?>>Stock (<?php _e( 'Stock', 'jigo_csvl' );?>)</option>
 				<option value="jigo_weight" <?php selected( strtoupper( $col ), 'WEIGHT');?>>Weight (<?php _e( 'Weight', 'jigo_csvl' );?>)</option>
-				<option value="jigo_sku" <?php selected( strtoupper( $col ), 'sku');?>>sku (<?php _e( 'SKU', 'jigo_csvl' );?>)</option>
+				<option value="jigo_sku" <?php selected( strtoupper( $col ), 'SKU');?>>SKU (<?php _e( 'SKU', 'jigo_csvl' );?>)</option>
 				<option value="jigo_order" <?php selected( strtoupper( $col ), 'ORDER');?>>Order (<?php _e( 'Order', 'jigo_csvl' );?>)</option>
 				<option value="jigo_tax" <?php selected( strtoupper( $col ), 'TAX');?>>Tax (<?php _e( 'Tax', 'jigo_csvl' );?>)</option>
 				<option value="jigo_attachment" <?php selected( strtoupper( $col ), 'ATTACHMENT');?>>Attachment (<?php _e( 'Attachment', 'jigo_csvl' );?>)</option>
