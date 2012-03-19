@@ -4,7 +4,7 @@
 
 if ( ! session_id() ) session_start();
 $post_type	= isset( $_REQUEST['post_type'] ) ? $_REQUEST['post_type'] : 'product';
-$separator	= isset( $_REQUEST['separator'] ) ? $_REQUEST['separator'] : '|';
+$separator	= isset( $_REQUEST['separator'] ) ? $_REQUEST['separator'] : ',';
 $titeled	= isset( $_REQUEST['titeled'] );
 $taxonomy	= isset( $_REQUEST['taxonomy'] ) ? $_REQUEST['taxonomy'] : 'taxonomy';
 $multi_cat	= isset( $_REQUEST['multi_cat'] ) ? $_REQUEST['multicat'] : 'multi_cat';
