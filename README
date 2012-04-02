@@ -1,8 +1,30 @@
-I am not plugin author. All credits to Colin and great JigoShop community. I just edit few lines.
+I am not plugin author. All credits goes to Colin and great JigoShop community. I just edit few lines.
 
 Share, contribute and live long opensourced!
+
+=== Installation ===
+
+1. Download latest version from GIT
+2. Extract to wp-content/plugins
+3. Rename to "Woocommerce-CSV-import"(optional)
+4. Enable plugin in your Wordpress Administration > Plugins
+5. If is everything allright new menu "CSV Loader" appear in your Administration
+
+=== Usage ===
+
+Example CSV is included within plugin - "example.csv"
+
+- Just open "example.csv" with your favourite editor (Libre Office, Open Office... maybe MS office i did not try). 
+- Separation symbol is dash: "," Language should be UTF-8 if you want use special symbols.
+- Edit and Save
+
+Use CSV Loader Administration menu to load your CSV. Page is self explayning...
+
+=== Changelog ===
 
 Version 0.1
 - Estabilished GIT
 Version 0.11
 - If product's name exists don't make duplication
+Version 0.12
+- Fixing duplication error ($upost['ID'] instead $upost->ID)

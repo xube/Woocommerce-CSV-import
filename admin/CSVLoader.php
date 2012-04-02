@@ -3,11 +3,12 @@
 /* Modified for Woocommerce */
 
 //Does this post exist? v. 0.2
+//For future should check also slug existance
 function wp_exist_post_by_title($title_str) {
 global $wpdb;
 return $wpdb->get_row("SELECT * FROM $wpdb->posts WHERE post_title = '" . $title_str . "'", 'ARRAY_A');
 }
-		
+
 if ( ! session_id() ) session_start();
 $post_type	= isset( $_REQUEST['post_type'] ) ? $_REQUEST['post_type'] : 'product';
 $separator	= isset( $_REQUEST['separator'] ) ? $_REQUEST['separator'] : ',';
@@ -127,8 +128,13 @@ if ( isset( $_REQUEST['wc_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 				'post_type'		=> $post_type,
 			);
 			if ( wp_exist_post_by_title($name) ) {
-				//Do nothing? NOPE! We have to add something to notification... COME ON!
-				$count--;
+				//ID for post we want update
+				$upost = array();
+				$upost = $wpdb->get_row("SELECT * FROM $wpdb->posts WHERE post_title = '" . $name . "'", 'ARRAY_A');
+				$idpost = $upost['ID'];
+				$post['ID'] = $idpost; 
+				$post_id = wp_update_post( $post );
+				$count--; //For update count
 			} else {
 				$post_id = wp_insert_post( $post );
 			}
@@ -315,7 +321,7 @@ for($i=0;$i<count($prod_cats);++$i)
 }
 ?>
 <div class="wrap">
-
+	
 <h2><?php echo __( 'CSV Loader for Woocommerce', 'wc_csvl' );?></h2>
 <p>Wait! Wait! Wait! It's a very alpha version, just to test NOT USE IN YOUR SITE, JUST TEST!</p>
 <p>To use a hierarchical categorie (parent/children) make a column multi_cat and writing in the fields the hierarchical category, ie: hardware,memory,sodimm,ddr3</p>
