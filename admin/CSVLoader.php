@@ -480,7 +480,7 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 
 				<option value="multi_cat" <?php selected( strtoupper( $col ), 'MULTI_CAT');?>>MultiCat (<?php _e( 'multi_cat', 'multi_cat' );?>)</option>
 
-				<option value="attribs" <?php selected( strtoupper( $col ), 'attribs');?>>Attrib (<?php _e( 'Attribs', 'attribs' );?>)</option>
+				<option value="attribs" <?php selected( strtoupper( $col ), 'ATTRIBS');?>>Attrib (<?php _e( 'Attribs', 'attribs' );?>)</option>
 
 				<?php foreach( get_object_taxonomies( $post_type ) as $taxmy ) : $tax = get_taxonomy( $taxmy ); ?>
 				<option value="wc_tax_<?php echo $taxmy;?>">T <?php echo $tax->labels->name;?></option>
