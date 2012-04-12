@@ -245,11 +245,12 @@ for($i=0;$i<count($prod_cats);++$i)
 				if ( ! is_array( $new_cat ) ) {
 					wp_insert_term(	$prod_cats[$i], 'product_cat', array( 'slug' => $prod_cats[$i], 'parent'=> $parent) );
 					$new_cat = term_exists( $prod_cats[$i], 'product_cat' );
-					if($hierarchical_multicat)
-					{
-					$parent = $new_cat['term_id'];
 					}
-					}
+					
+				if($hierarchical_multicat) {
+				    $parent = $new_cat['term_id'];
+				}
+				
 				wp_set_object_terms( $post_id, (int)$new_cat['term_id'], 'product_cat', true );
                 
                 // Remove the cache: http://wordpress.stackexchange.com/questions/24498/wp-insert-term-parent-child-problem
