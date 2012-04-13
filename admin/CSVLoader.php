@@ -54,7 +54,7 @@ if ( isset( $_REQUEST['wc_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 			$order = '';
 			$weight = 0;
 			$sku = '';
-			$stock = -1;
+			$stock = '';
 			$tax = 0;
 			$attachments = array();
 			$thumbnail = '';
