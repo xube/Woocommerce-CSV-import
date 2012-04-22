@@ -42,7 +42,7 @@ class CSVLoaderForWoocommerce {
 		
 if (function_exists('add_menu_page'))
 {
-add_menu_page('Csv Loader', 'Csv Loader', 10, dirname( __FILE__ ) . '/admin/CSVLoader.php');
+add_menu_page('Csv Loader', 'Csv Loader', 'administrator', dirname( __FILE__ ) . '/admin/CSVLoader.php');
 }
 	}
 }
