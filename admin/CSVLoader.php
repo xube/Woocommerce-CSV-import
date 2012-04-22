@@ -14,8 +14,7 @@ $post_type	= isset( $_REQUEST['post_type'] ) ? $_REQUEST['post_type'] : 'product
 $separator	= isset( $_REQUEST['separator'] ) ? $_REQUEST['separator'] : ',';
 $titeled	= isset( $_REQUEST['titeled'] );
 $taxonomy	= isset( $_REQUEST['taxonomy'] ) ? $_REQUEST['taxonomy'] : 'taxonomy';
-$multi_cat	= isset( $_REQUEST['multi_cat'] ) ? $_REQUEST['multicat'] : 'multi_cat';
-
+$hierarchical_multicat = isset( $_REQUEST['hierarchical_multicat'] );
 
 $cat		= isset( $_REQUEST['wc_cat'] ) ? $_REQUEST['wc_cat'] : '';
 $wc_status	= isset( $_REQUEST['wc_status'] ) ? $_REQUEST['wc_status'] : '';
@@ -55,7 +54,7 @@ if ( isset( $_REQUEST['wc_load_csv'] ) && isset( $_FILES['upload_file'] ) ) {
 			$order = '';
 			$weight = 0;
 			$sku = '';
-			$stock = -1;
+			$stock = '';
 			$tax = 0;
 			$attachments = array();
 			$thumbnail = '';
@@ -246,14 +245,16 @@ for($i=0;$i<count($prod_cats);++$i)
 				if ( ! is_array( $new_cat ) ) {
 					wp_insert_term(	$prod_cats[$i], 'product_cat', array( 'slug' => $prod_cats[$i], 'parent'=> $parent) );
 					$new_cat = term_exists( $prod_cats[$i], 'product_cat' );
-					if($hierarchical_multicat)
-					{
-					$parent = $new_cat['term_id'];
 					}
-					}
+					
+				if($hierarchical_multicat) {
+				    $parent = $new_cat['term_id'];
+				}
+				
 				wp_set_object_terms( $post_id, (int)$new_cat['term_id'], 'product_cat', true );
-
-
+                
+                // Remove the cache: http://wordpress.stackexchange.com/questions/24498/wp-insert-term-parent-child-problem
+				delete_option("product_cat_children"); 
 			}
 			unset($parent);
 
@@ -445,6 +446,9 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 <?php if ( isset( $_REQUEST['titeled'] ) ) :?>
 <input type="hidden" name="titeled" value="y"/>
 <?php endif;?>
+<?php if ( isset( $_REQUEST['hierarchical_multicat'] ) ) :?>
+<input type="hidden" name="hierarchical_multicat" value="y"/>
+<?php endif;?>
 <table class="widefat fixed" cellspacing="0">
 <thead>
 	<tr scope="col" class="manage-column">
@@ -480,7 +484,7 @@ if (preg_match('/pa_/', $taxmy) == 0)  {?>
 
 				<option value="multi_cat" <?php selected( strtoupper( $col ), 'MULTI_CAT');?>>MultiCat (<?php _e( 'multi_cat', 'multi_cat' );?>)</option>
 
-				<option value="attribs" <?php selected( strtoupper( $col ), 'attribs');?>>Attrib (<?php _e( 'Attribs', 'attribs' );?>)</option>
+				<option value="attribs" <?php selected( strtoupper( $col ), 'ATTRIBS');?>>Attrib (<?php _e( 'Attribs', 'attribs' );?>)</option>
 
 				<?php foreach( get_object_taxonomies( $post_type ) as $taxmy ) : $tax = get_taxonomy( $taxmy ); ?>
 				<option value="wc_tax_<?php echo $taxmy;?>">T <?php echo $tax->labels->name;?></option>
